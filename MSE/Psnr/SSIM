@@ -1,0 +1,97 @@
+import cv2
+import numpy as np
+from sklearn.metrics import mean_squared_error
+import os
+import numpy as np
+from sewar.full_ref import mse,rmse,psnr,uqi,vifp,ssim
+'''
+def test_ravel():
+    a = [[[1,2],[3,4]],
+        [[5,6],[7,8]]]
+    a = np.array(a)
+    b = [2,3,4,5,6,7,8,9]
+
+    print(a.shape)
+    print(a)
+    print(a.ravel())
+    mse = mean_squared_error(a.ravel(),b)
+    print(mse)
+'''
+def path_sets(root):
+    labelP = []
+    imageP = []
+    for path in os.listdir(root):
+        file_name = root+path
+        for i,path_i in enumerate(os.listdir(file_name)):
+            if path_i.endswith('jfif') or path_i.endswith('jpg') or path_i.endswith('png'):
+                label_path = file_name + '/' + path_i
+                labelP.append(label_path)
+                # print(label_path)
+            else:
+                root_file = file_name + '/' + path_i + '/'
+                # print(root_file+str('*************'))
+                imgP = []
+                for j,path_in in enumerate(os.listdir(root_file)):
+                    img_path = root_file + path_in
+                    imgP.append(img_path)
+                    # print(img_path)
+                imageP.append(imgP)
+    return labelP,imageP
+
+root = 'D:/newtest/matrix/data/'
+labels,images = path_sets(root)
+index = 1
+Mse=[]
+Psnr=[]
+Uqi=[]
+Vife=[]
+Ssim=[]
+
+for fileName in images:
+    print(str('===')*index)
+    for image,label in zip(fileName,labels):
+        print(image)
+        # print(label)
+        img = cv2.imread(image)
+        imglb = cv2.imread(label)
+
+        mseimg = mse(imglb,img)
+        print('mse is : %4f' % mseimg)
+        #
+        Mse.append(mseimg)
+        a=np.mean(Mse)
+        print('Mse is : %4f' % a)
+
+
+      #  rm = rmse(imglb,img)
+       # print('rmse is : %4f'%rm)
+        ps = psnr(imglb,img)
+        print('psnr is : %4f' % ps)
+        Psnr.append(ps)
+        b = np.mean(Psnr)
+        print('Psnr is : %4f'%b)
+
+
+
+
+        s = ssim(imglb,img)
+        print( s)
+        Ssim.append(s)
+        S=np.mean(Ssim)
+        print(S)
+
+
+        v=vifp(imglb,img)
+        print('vifp is : %4f' % v)
+        Vife.append(v)
+        c=np.mean(Vife)
+        print('Vifp is : %4f' % c)
+
+
+        u = uqi(imglb,img)
+        print('uqi is : %4f'%u)
+        Uqi.append(u)
+        d=np.mean(Uqi)
+        print('Uqi is : %4f' % d)
+        index += 1
+
